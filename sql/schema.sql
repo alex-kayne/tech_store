@@ -35,7 +35,6 @@ CREATE TABLE IF NOT EXISTS orders
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
     dt_created  DATETIME NOT NULL,
     client_id   INTEGER  NOT NULL,
-    product_ids TEXT     NOT NULL,
     FOREIGN KEY (client_id) REFERENCES clients (id)
 );
 
