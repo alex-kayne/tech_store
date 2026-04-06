@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS products
 CREATE TABLE IF NOT EXISTS categories
 (
     id        INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT,
     parent_id INTEGER
 );
 
