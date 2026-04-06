@@ -1,14 +1,14 @@
 from fastapi import APIRouter, Depends
 
 from app import const
-from app.schemas.categories.api import CategoryCreation
+from app.schemas.products.api import ProductCreate
 from app.schemas.common.api import ApiResponse
-from app.services.categories.service import CategoryService
-from app.dependencies import get_category_service
+from app.services import ProductsService
+from app.dependencies import get_product_service
 router = APIRouter(prefix=const.API_PREFIX)
 
-@router.post("/create_product")
-async def create_category(data: CategoryCreation,
-                          category_service: CategoryService = Depends(get_category_service)) -> ApiResponse:
-    new_id = await category_service.create_category(data)
-    return ApiResponse(success=True, message=f"Category created {new_id=}")
+@router.post("/create_product", tags=["products"])
+async def create_category(data: ProductCreate,
+                          product_service: ProductsService = Depends(get_product_service)) -> ApiResponse:
+    new_id = await product_service.create_product(data)
+    return ApiResponse(success=True, message=f"Product created {new_id=}")

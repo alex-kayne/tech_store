@@ -4,3 +4,4 @@ class ProductCreate(BaseModel):
     name: str
     price: float
     quantity: int
+    category_id: int
