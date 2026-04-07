@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends
 from app import const
 from app.schemas.clients.api import ClientCreate
 from app.schemas.common.api import ApiResponse
-from app.services import ClientsService
+from app.services.clients.service import ClientsService
 from app.dependencies import get_clients_service
 router = APIRouter(prefix=const.API_PREFIX)
 

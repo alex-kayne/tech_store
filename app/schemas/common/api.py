@@ -2,4 +2,5 @@ from pydantic import BaseModel
 
 class ApiResponse(BaseModel):
     success: bool
-    message: str
+    message: str | None = None
+    data: dict | None = None

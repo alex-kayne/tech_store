@@ -1,4 +1,6 @@
 from pathlib import Path
+from sqlite3 import Row
+from typing import Iterable
 
 import aiosqlite
 
@@ -35,3 +37,16 @@ async def insert(raw_sql_template: str, values: tuple) -> None:
         await db.execute("PRAGMA foreign_keys = ON;")
         await db.execute(raw_sql_template, values)
         await db.commit()
+
+
+async def select(raw_sql_template: str) -> Iterable[Row]:
+    async with aiosqlite.connect(DB_PATH) as db:
+        await db.execute("PRAGMA foreign_keys = ON;")
+        async with db.execute(raw_sql_template) as cursor:
+            return await cursor.fetchall()
+
+async def select_one_row(raw_sql_template: str) -> Row | None:
+    async with aiosqlite.connect(DB_PATH) as db:
+        await db.execute("PRAGMA foreign_keys = ON;")
+        async with db.execute(raw_sql_template) as cursor:
+            return await cursor.fetchone()
