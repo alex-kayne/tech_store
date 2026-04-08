@@ -13,7 +13,6 @@ CREATE TABLE IF NOT EXISTS categories
     parent_id INTEGER
 );
 
---потому что из тз не понятно - может ли один продукт входить в несколько категорий
 CREATE TABLE IF NOT EXISTS categories_has_products
 (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -35,6 +34,7 @@ CREATE TABLE IF NOT EXISTS orders
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
     dt_created  DATETIME NOT NULL,
     client_id   INTEGER  NOT NULL,
+    total_amount REAL NOT NULL,
     FOREIGN KEY (client_id) REFERENCES clients (id)
 );
 
@@ -42,5 +42,6 @@ CREATE TABLE IF NOT EXISTS orders_price
 (
     id         INTEGER PRIMARY KEY AUTOINCREMENT,
     product_id INTEGER NOT NULL,
+    quantity INTEGER NOT NULL,
     FOREIGN KEY (product_id) REFERENCES products (id)
 );

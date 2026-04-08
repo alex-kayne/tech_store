@@ -1,4 +1,4 @@
-from sqlite3 import Row
+from aiosqlite import Row
 
 import app.db as sqlite_db
 from app.schemas.categories import api

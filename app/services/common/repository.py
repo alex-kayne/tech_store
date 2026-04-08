@@ -1,5 +1,5 @@
-from sqlite3 import Row
-from typing import Iterable
+from aiosqlite import Row
+from collections.abc import Iterable
 
 import app.db as sqlite_db
 

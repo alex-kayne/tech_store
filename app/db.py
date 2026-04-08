@@ -1,8 +1,9 @@
 from pathlib import Path
-from sqlite3 import Row
-from typing import Iterable
+from aiosqlite import Row
+from collections.abc import Iterable
 
 import aiosqlite
+from mypyc.ir.ops import Sequence
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 DB_PATH = BASE_DIR / "data" / "app.db"
@@ -23,7 +24,7 @@ async def init_db() -> None:
         await db.commit()
 
 
-async def returning_insert(raw_sql_template: str, values: tuple) -> int:
+async def returning_insert(raw_sql_template: str, values: Sequence[object]) -> int:
     async with aiosqlite.connect(DB_PATH) as db:
         await db.execute("PRAGMA foreign_keys = ON;")
         async with db.execute(raw_sql_template, values) as cursor:
@@ -32,7 +33,7 @@ async def returning_insert(raw_sql_template: str, values: tuple) -> int:
             return new_id[0]
 
 
-async def insert(raw_sql_template: str, values: tuple) -> None:
+async def insert(raw_sql_template: str, values: Sequence[object]) -> None:
     async with aiosqlite.connect(DB_PATH) as db:
         await db.execute("PRAGMA foreign_keys = ON;")
         await db.execute(raw_sql_template, values)

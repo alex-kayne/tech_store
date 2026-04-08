@@ -1,11 +1,10 @@
-from sqlite3 import Row
-from typing import Iterable, Dict, Tuple
+from aiosqlite import Row
+from collections.abc import Iterable, Mapping
 
-from app.services.common.repository import CategoryProductQueryRepository
 from app.services.categories.repository import CategoryRepository
+from app.services.common.repository import CategoryProductQueryRepository
 from schemas.products.api import ProductCreate
 from .repository import ProductsRepository
-
 
 class ProductsService:
     def __init__(self, products_repository: ProductsRepository,
@@ -22,8 +21,8 @@ class ProductsService:
         await self.products_repository.create_product_category_link(new_product_id, data.category_id)
         return new_product_id
 
-    def _build_product_tree(self, categories_with_products: Iterable[Row]) -> dict:
-        path_dict: Dict[str, Tuple] = {}
+    def _build_product_tree(self, categories_with_products: Iterable[Row]) -> Mapping[str, object]:
+        path_dict: dict[str, tuple] = {}
         product_tree = {}
         for rec in categories_with_products:
             name = rec[0]
@@ -39,7 +38,7 @@ class ProductsService:
                         linked_obj = product_tree[key]
                     else:
                         linked_obj = linked_obj[key]
-                if not price:
+                if price is None:
                     linked_obj[name] = {}
                 else:
                     linked_obj[name] = {"price": price, "quantity": quantity,}
@@ -49,7 +48,7 @@ class ProductsService:
 
         return product_tree
 
-    async def get_product_tree(self) -> dict:
+    async def get_product_tree(self) -> Mapping[str, object]:
 
         categories_with_products = await self.category_product_repository.get_categories_with_products()
 
