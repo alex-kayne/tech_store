@@ -7,7 +7,7 @@ from aiosqlite import Row, Connection
 from loguru import logger
 from mypyc.ir.ops import Sequence
 
-from schemas.orders.api import CreateOrder, ProductQuantity
+from schemas.orders.api import CreateOrder, ProductQuantity, AddProduct
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 DB_PATH = BASE_DIR / "data" / "app.db"
@@ -66,10 +66,10 @@ async def _product_stock_updating(db: Connection, product_quantity_list: Iterabl
         cursor = await db.execute(
             f"""
             UPDATE products
-            SET quantity = quantity - {quantity}
-            WHERE id = {product_id}
-              AND quantity >= {quantity}
-            """
+            SET quantity = quantity - ?
+            WHERE id = ? AND quantity >= ?
+            """,
+            (quantity, product_id, quantity)
         )
 
         if cursor.rowcount == 0:
@@ -101,7 +101,35 @@ async def create_order(order_data: CreateOrder) -> int | None:
             return new_order_id
 
         except Exception as e:
-            logger.error(e)
-            logger.error(f"Failed to create order")
+            logger.error(f"Failed to create order: {e}")
             await db.rollback()
             return None
+
+async def add_product_to_order(data: AddProduct) -> bool:
+
+    async with aiosqlite.connect(DB_PATH) as db:
+        await db.execute("PRAGMA foreign_keys = ON;")
+        await db.execute("BEGIN IMMEDIATE")
+        try:
+            await _product_stock_updating(db, [ProductQuantity(product_id=data.product_id, quantity=data.quantity)])
+
+            cursor = await db.execute(
+                f"""
+                       UPDATE orders_products
+                       SET quantity = quantity + ?
+                       WHERE order_id = ? AND product_id = ?
+                       """,
+                (data.quantity, data.order_id, data.product_id,)
+            )
+            if cursor.rowcount == 0:
+                await _create_order_product_links(db, data.order_id,
+                                                  [ProductQuantity(product_id=data.product_id, quantity=data.quantity)])
+            await db.commit()
+
+            return True
+
+        except Exception as e:
+            logger.error(e)
+            logger.error(f"Failed to update order: {e}")
+            await db.rollback()
+            return False

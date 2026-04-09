@@ -10,5 +10,8 @@ router = APIRouter(prefix=const.API_PREFIX)
 @router.post("/create_client", tags=["clients"])
 async def create_client(data: ClientCreate,
                         client_service: ClientsService = Depends(get_clients_service)) -> ApiResponse:
+    """
+    Client creation endpoint
+    """
     new_id = await client_service.create_client(data)
     return ApiResponse(success=True, message=f"Client created {new_id=}")

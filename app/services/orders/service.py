@@ -1,5 +1,5 @@
 from schemas.common.api import ApiResponse
-from schemas.orders.api import CreateOrder
+from schemas.orders.api import CreateOrder, AddProduct
 from services.orders.repository import OrdersRepository
 
 
@@ -15,3 +15,16 @@ class OrdersService:
             return ApiResponse(success=True, message=f"Order created successfully {new_order_id=}")
 
         return ApiResponse(success=False, message="Could not create order")
+
+
+    async def add_product_to_order(self, data: AddProduct) -> ApiResponse:
+        if not await self.order_repository.is_order_exists(data.order_id):
+            return ApiResponse(success=False, message="Order doesn`t exist")
+
+
+        if not await self.order_repository.is_products_exists_and_available([str(data.product_id)]):
+            return ApiResponse(success=False, message="Some of the products is not available")
+
+        if await self.order_repository.add_product_to_order(data):
+            return ApiResponse(success=True, message="Product added to order")
+        return ApiResponse(success=False, message="Couldn`t add product to order")
