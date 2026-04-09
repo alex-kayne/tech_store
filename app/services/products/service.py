@@ -29,6 +29,7 @@ class ProductsService:
             parent_name = rec[2]
             price = rec[3]
             quantity = rec[4]
+            product_id = rec[5]
 
             if path := path_dict.get(parent_name):
                 path_dict[name] = (*path, name)
@@ -41,7 +42,7 @@ class ProductsService:
                 if price is None:
                     linked_obj[name] = {}
                 else:
-                    linked_obj[name] = {"price": price, "quantity": quantity,}
+                    linked_obj[name] = {"product_id": product_id, "price": price, "quantity": quantity,}
             else:
                 path_dict[name] = (name, )
                 product_tree[name] = {}

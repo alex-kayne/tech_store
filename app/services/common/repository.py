@@ -9,13 +9,13 @@ class CategoryProductQueryRepository:
     async def get_categories_with_products(self) -> Iterable[Row]:
         sql_text = """SELECT *
                       FROM 
-                      (SELECT c.name, c.parent_id, parent_c.name as parent_name, NULL as price, NULL as quantity
+                      (SELECT c.name, c.parent_id, parent_c.name as parent_name, NULL as price, NULL as quantity, NULL as product_id 
                       FROM categories AS c 
                       LEFT JOIN categories AS parent_c ON c.parent_id = parent_c.id
                       
                       UNION 
                       
-                      SELECT p.name, chp.category_id, c.name, p.price, p.quantity
+                      SELECT p.name, chp.category_id, c.name, p.price, p.quantity, p.id as product_id
                       FROM products AS p
                       JOIN categories_has_products AS chp ON chp.product_id = p.id
                       JOIN categories AS c ON chp.category_id = c.id)

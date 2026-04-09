@@ -34,14 +34,15 @@ CREATE TABLE IF NOT EXISTS orders
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
     dt_created  DATETIME NOT NULL,
     client_id   INTEGER  NOT NULL,
-    total_amount REAL NOT NULL,
     FOREIGN KEY (client_id) REFERENCES clients (id)
 );
 
-CREATE TABLE IF NOT EXISTS orders_price
+CREATE TABLE IF NOT EXISTS orders_products
 (
     id         INTEGER PRIMARY KEY AUTOINCREMENT,
     product_id INTEGER NOT NULL,
     quantity INTEGER NOT NULL,
-    FOREIGN KEY (product_id) REFERENCES products (id)
+    order_id INTEGER NOT NULL,
+    FOREIGN KEY (product_id) REFERENCES products (id),
+    FOREIGN KEY (order_id) REFERENCES orders (id)
 );

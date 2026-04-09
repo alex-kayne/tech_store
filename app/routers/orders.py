@@ -9,7 +9,7 @@ from dependencies import get_orders_service
 router = APIRouter(prefix=const.API_PREFIX)
 
 
-@router.post("/create_order", tags=["clients"])
+@router.post("/create_order", tags=["orders"])
 async def create_order(data: CreateOrder,
                        order_service: OrdersService = Depends(get_orders_service)) -> ApiResponse:
     result = await order_service.create_order(data)
