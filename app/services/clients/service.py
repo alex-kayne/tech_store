@@ -1,4 +1,4 @@
-from schemas.clients.api import ClientCreate
+from app.schemas.clients.api import ClientCreate
 from .repository import ClientsRepository
 
 

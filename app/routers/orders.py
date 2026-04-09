@@ -4,7 +4,7 @@ from app import const
 from app.schemas.common.api import ApiResponse
 from app.schemas.orders.api import CreateOrder, AddProduct
 from app.services.orders.service import OrdersService
-from dependencies import get_orders_service
+from app.dependencies import get_orders_service
 
 router = APIRouter(prefix=const.API_PREFIX)
 

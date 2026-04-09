@@ -3,7 +3,7 @@ from collections.abc import Iterable, Mapping
 
 from app.services.categories.repository import CategoryRepository
 from app.services.common.repository import CategoryProductQueryRepository
-from schemas.products.api import ProductCreate
+from app.schemas.products.api import ProductCreate
 from .repository import ProductsRepository
 
 class ProductsService:

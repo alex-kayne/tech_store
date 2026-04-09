@@ -1,5 +1,5 @@
 from collections.abc import Collection
-from schemas.orders.api import CreateOrder, AddProduct
+from app.schemas.orders.api import CreateOrder, AddProduct
 import app.db as sqlite_db
 
 class OrdersRepository:

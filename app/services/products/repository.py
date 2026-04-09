@@ -1,5 +1,5 @@
 import app.db as sqlite_db
-from schemas.products.api import ProductCreate
+from app.schemas.products.api import ProductCreate
 
 class ProductsRepository:
 

@@ -1,13 +1,13 @@
 import datetime
 from collections.abc import Iterable
+from collections.abc import Sequence
 from pathlib import Path
 
 import aiosqlite
 from aiosqlite import Row, Connection
 from loguru import logger
-from mypyc.ir.ops import Sequence
 
-from schemas.orders.api import CreateOrder, ProductQuantity, AddProduct
+from app.schemas.orders.api import CreateOrder, ProductQuantity, AddProduct
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 DB_PATH = BASE_DIR / "data" / "app.db"

@@ -1,6 +1,6 @@
-from schemas.common.api import ApiResponse
-from schemas.orders.api import CreateOrder, AddProduct
-from services.orders.repository import OrdersRepository
+from app.schemas.common.api import ApiResponse
+from app.schemas.orders.api import CreateOrder, AddProduct
+from app.services.orders.repository import OrdersRepository
 
 
 class OrdersService:

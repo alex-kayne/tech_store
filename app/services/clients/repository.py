@@ -1,5 +1,5 @@
 import app.db as sqlite_db
-from schemas.clients.api import ClientCreate
+from app.schemas.clients.api import ClientCreate
 
 
 class ClientsRepository:
