@@ -13,5 +13,4 @@ async def create_category(data: CategoryCreation,
     """
     Category creation endpoint
     """
-    new_id = await category_service.create_category(data)
-    return ApiResponse(success=True, message=f"Category created {new_id=}")
+    return await category_service.create_category(data)

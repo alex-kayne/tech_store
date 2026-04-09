@@ -1,5 +1,5 @@
 from aiosqlite import Row
-from collections.abc import Iterable, Mapping
+from collections.abc import Iterable, Mapping, MutableMapping
 
 from app.services.categories.repository import CategoryRepository
 from app.services.common.repository import CategoryProductQueryRepository
@@ -16,14 +16,15 @@ class ProductsService:
 
     async def create_product(self, data: ProductCreate) -> int | None:
         if not await self.category_repository.get_category_by(data.category_id):
-            return
-        new_product_id = await self.products_repository.create_product(data)
+            return None
+        if not (new_product_id := await self.products_repository.create_product(data)):
+            return None
         await self.products_repository.create_product_category_link(new_product_id, data.category_id)
         return new_product_id
 
-    def _build_product_tree(self, categories_with_products: Iterable[Row]) -> Mapping[str, object]:
+    def _build_product_tree(self, categories_with_products: Iterable[Row]) -> dict[str, dict]:
         path_dict: dict[str, tuple] = {}
-        product_tree = {}
+        product_tree: dict[str, dict] = {}
         for rec in categories_with_products:
             name = rec[0]
             parent_name = rec[2]
@@ -39,17 +40,18 @@ class ProductsService:
                         linked_obj = product_tree[key]
                     else:
                         linked_obj = linked_obj[key]
-                if price is None:
-                    linked_obj[name] = {}
-                else:
-                    linked_obj[name] = {"product_id": product_id, "price": price, "quantity": quantity,}
+                if linked_obj is not None:
+                    if price is None:
+                        linked_obj[name] = {}
+                    else:
+                        linked_obj[name] = {"product_id": product_id, "price": price, "quantity": quantity,}
             else:
                 path_dict[name] = (name, )
                 product_tree[name] = {}
 
         return product_tree
 
-    async def get_product_tree(self) -> Mapping[str, object]:
+    async def get_product_tree(self) -> dict[str, dict]:
 
         categories_with_products = await self.category_product_repository.get_categories_with_products()
 

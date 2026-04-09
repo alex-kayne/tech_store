@@ -23,7 +23,7 @@ class OrdersService:
 
 
         if not await self.order_repository.is_products_exists_and_available([str(data.product_id)]):
-            return ApiResponse(success=False, message="Some of the products is not available")
+            return ApiResponse(success=False, message="Product is not available")
 
         if await self.order_repository.add_product_to_order(data):
             return ApiResponse(success=True, message="Product added to order")

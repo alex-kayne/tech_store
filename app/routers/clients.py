@@ -13,5 +13,5 @@ async def create_client(data: ClientCreate,
     """
     Client creation endpoint
     """
-    new_id = await client_service.create_client(data)
-    return ApiResponse(success=True, message=f"Client created {new_id=}")
+    return await client_service.create_client(data)
+

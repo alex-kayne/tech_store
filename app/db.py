@@ -28,13 +28,17 @@ async def init_db() -> None:
         await db.commit()
 
 
-async def returning_insert(raw_sql_template: str, values: Sequence[object]) -> int:
+async def returning_insert(raw_sql_template: str, values: Sequence[object]) -> int | None:
     async with aiosqlite.connect(DB_PATH) as db:
         await db.execute("PRAGMA foreign_keys = ON;")
         async with db.execute(raw_sql_template, values) as cursor:
             new_id = await cursor.fetchone()
-            await db.commit()
-            return new_id[0]
+            if new_id is None:
+                logger.error(f"Can`t proccess {raw_sql_template=}")
+                return None
+            else:
+                await db.commit()
+                return new_id[0]
 
 
 async def insert(raw_sql_template: str, values: Sequence[object]) -> None:
@@ -76,8 +80,10 @@ async def _product_stock_updating(db: Connection, product_quantity_list: Iterabl
             raise ValueError(f"Not enough stock for product {product_id}")
 
 
-async def _create_order_product_links(db: Connection, new_order_id: int, product_quantity_list: Iterable[ProductQuantity]):
-    payload_data = {(new_order_id, product_quantity.product_id, product_quantity.quantity) for product_quantity in product_quantity_list}
+async def _create_order_product_links(db: Connection, new_order_id: int,
+                                      product_quantity_list: Iterable[ProductQuantity]):
+    payload_data = {(new_order_id, product_quantity.product_id, product_quantity.quantity) for product_quantity in
+                    product_quantity_list}
 
     await db.executemany("INSERT INTO orders_products (order_id, product_id, quantity) VALUES (?, ?, ?)", payload_data)
 
@@ -95,7 +101,9 @@ async def create_order(order_data: CreateOrder) -> int | None:
                 sql_create_order,
                 (now, order_data.client_id),
             )
-            new_order_id = (await cursor.fetchone())[0]
+            if not (row := await cursor.fetchone()):
+                return None
+            new_order_id = row[0]
             await _create_order_product_links(db, new_order_id, order_data.products)
             await db.commit()
             return new_order_id
@@ -105,8 +113,8 @@ async def create_order(order_data: CreateOrder) -> int | None:
             await db.rollback()
             return None
 
-async def add_product_to_order(data: AddProduct) -> bool:
 
+async def add_product_to_order(data: AddProduct) -> bool:
     async with aiosqlite.connect(DB_PATH) as db:
         await db.execute("PRAGMA foreign_keys = ON;")
         await db.execute("BEGIN IMMEDIATE")
